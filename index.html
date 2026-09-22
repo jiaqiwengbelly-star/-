@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>瓯江诗路｜文学景观互动地图</title>
+<meta name="description" content="瓯江诗路——温州楠溪江与丽水瓯江上游文学景观互动地图，收录诗词与文旅信息。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1EBDC; --paper-2:#E8E0CB; --ink:#2B2622; --ink-soft:#5B5346;
+  --seal:#A6362A; --jade:#3F5C4E; --gold:#B08A4E; --line:#CDBFA0;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+body{
+  height:100%; margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Serif SC",serif;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(176,138,78,.08), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(63,92,78,.08), transparent 55%);
+}
+:root:not([data-theme="light"]) { }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ }
+}
+
+header{
+  padding:2.2rem 5vw 1.2rem;
+  border-bottom:1px solid var(--line);
+}
+header .brand{
+  font-family:"Noto Serif SC",serif; font-size:1.1rem; font-weight:700; color:var(--seal);
+  letter-spacing:.5em; margin-bottom:.5rem;
+}
+header h1{
+  margin:0; font-size:clamp(1.3rem,3.4vw,1.9rem); font-weight:600; letter-spacing:.08em; color:var(--ink-soft);
+}
+header p{ margin:.6rem 0 0; color:var(--ink-soft); font-size:.95rem; max-width:62ch; line-height:1.7;}
+
+.stage{ position:relative; padding:1.4rem 5vw 3rem; }
+.map-wrap{
+  position:relative; width:100%; aspect-ratio:16/10; max-height:78vh;
+  border:1px solid var(--line); background:linear-gradient(180deg,#F5F0E4,#EAE2CB);
+  overflow:hidden;
+}
+.map-wrap svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+.region-tag{
+  position:absolute; font-family:"Noto Sans SC",sans-serif; font-size:.72rem;
+  color:var(--ink-soft); letter-spacing:.25em; writing-mode:vertical-rl;
+}
+.tag-wz{ top:8%; right:6%; } .tag-ls{ bottom:8%; left:6%; }
+
+.marker{
+  position:absolute; transform:translate(-50%,-50%); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:.3rem;
+  background:none; border:none; padding:0; font-family:"Noto Serif SC",serif;
+}
+.marker .dot{
+  width:15px; height:15px; background:var(--seal); border-radius:2px;
+  transform:rotate(45deg); box-shadow:0 0 0 3px rgba(166,54,42,.15);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.marker.draft .dot{ background:var(--jade); box-shadow:0 0 0 3px rgba(63,92,78,.15); }
+.marker:hover .dot, .marker:focus-visible .dot{ transform:rotate(45deg) scale(1.25); }
+.marker .label{
+  font-size:.86rem; color:var(--ink); background:rgba(241,235,220,.88);
+  padding:.1rem .5rem; white-space:nowrap; border:1px solid var(--line);
+}
+
+.legend{
+  display:flex; gap:1.6rem; margin-top:1rem; font-family:"Noto Sans SC",sans-serif;
+  font-size:.8rem; color:var(--ink-soft); flex-wrap:wrap;
+}
+.legend span{ display:inline-flex; align-items:center; gap:.4rem; }
+.legend i{ width:10px; height:10px; background:var(--seal); transform:rotate(45deg); display:inline-block; }
+.legend i.draft{ background:var(--jade); }
+
+.hint{ margin-top:.5rem; font-size:.82rem; color:var(--ink-soft); font-family:"Noto Sans SC",sans-serif;}
+
+/* Panel */
+.overlay{
+  position:fixed; inset:0; background:rgba(43,38,34,.35); opacity:0; pointer-events:none;
+  transition:opacity .25s ease; z-index:20;
+}
+.overlay.open{ opacity:1; pointer-events:auto; }
+
+.panel{
+  position:fixed; top:0; right:0; height:100%; width:min(480px,92vw);
+  background:var(--paper); border-left:1px solid var(--line);
+  transform:translateX(100%); transition:transform .3s ease;
+  z-index:21; overflow-y:auto; padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+}
+.panel.open{ transform:translateX(0); }
+.panel-inner{ padding:1.6rem 1.6rem 3rem; }
+.panel-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.panel-close{
+  background:none; border:1px solid var(--line); color:var(--ink); width:32px; height:32px;
+  font-size:1rem; cursor:pointer; flex:none; font-family:"Noto Sans SC",sans-serif;
+}
+.panel-tag{ font-family:"Noto Sans SC",sans-serif; font-size:.72rem; color:var(--seal); letter-spacing:.1em;}
+.panel h2{ margin:.3rem 0 .2rem; font-size:1.5rem; }
+.panel .region{ font-size:.85rem; color:var(--ink-soft); margin-bottom:.9rem; }
+.panel .summary{ font-size:.9rem; line-height:1.85; color:var(--ink-soft); margin-bottom:1.3rem; }
+
+.tabs{ display:flex; gap:0; border-bottom:1px solid var(--line); margin-bottom:1.1rem; flex-wrap:wrap; }
+.tab{
+  font-family:"Noto Sans SC",sans-serif; font-size:.86rem; padding:.55rem .9rem;
+  background:none; border:none; cursor:pointer; color:var(--ink-soft); position:relative;
+}
+.tab.active{ color:var(--ink); font-weight:500; }
+.tab.active::after{
+  content:""; position:absolute; left:.9rem; right:.9rem; bottom:-1px; height:2px; background:var(--seal);
+}
+.tabpanel{ display:none; }
+.tabpanel.active{ display:block; }
+
+.poem{ margin-bottom:1.4rem; padding-bottom:1.2rem; border-bottom:1px dashed var(--line); }
+.poem:last-child{ border-bottom:none; }
+.poem .ptitle{ font-weight:700; font-size:1.02rem; }
+.poem .pauthor{ font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--ink-soft); margin:.15rem 0 .6rem; }
+.poem .ptext p{ margin:0 0 .25rem; line-height:1.9; font-size:.98rem; }
+.poem .pnote{ font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--gold); margin-top:.5rem; }
+.photo-slot{
+  margin-top:.8rem; border:1px dashed var(--line); background:var(--paper-2);
+  min-height:96px; display:flex; align-items:center; justify-content:center;
+  font-family:"Noto Sans SC",sans-serif; font-size:.76rem; color:var(--ink-soft); text-align:center; gap:.4rem; flex-direction:column;
+}
+.photo-slot .cam{ font-size:1.1rem; opacity:.55; }
+
+.itemlist{ list-style:none; margin:0; padding:0; }
+.itemlist li{ padding:.7rem 0; border-bottom:1px solid var(--paper-2); }
+.itemlist li:last-child{ border-bottom:none; }
+.itemlist .iname{ font-weight:600; font-size:.96rem; }
+.itemlist .idesc{ font-family:"Noto Sans SC",sans-serif; font-size:.83rem; color:var(--ink-soft); margin-top:.2rem; line-height:1.6; }
+
+.empty{ font-family:"Noto Sans SC",sans-serif; font-size:.85rem; color:var(--ink-soft); padding:1rem 0; }
+.empty .fill{ color:var(--jade); }
+
+footer{ padding:1.5rem 5vw 2.5rem; font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--ink-soft); border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">瓯江诗路</div>
+  <h1>文学景观互动地图</h1>
+  <p>沿瓯江两岸，温州楠溪江与丽水大溪—龙泉溪两片诗核，串起孤屿、古村与名人故里。点击图中标记，查看该点位留存的诗词，以及美食、特产、非遗与景点信息。</p>
+</header>
+
+<div class="stage">
+  <div class="map-wrap" id="mapWrap">
+    <svg viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0.17  0 0 0 0 0.15  0 0 0 0 0.12  0 0 0 0.03 0"/></filter>
+        <linearGradient id="skyFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#EFE6CE"/><stop offset="1" stop-color="#E4D8B8"/>
+        </linearGradient>
+      </defs>
+      <rect width="1000" height="620" fill="url(#skyFade)"/>
+
+      <!-- 远山层：淡墨渲染，笔触起伏 -->
+      <path d="M-20,210 C60,150 130,190 190,160 C260,124 320,175 400,150 C470,128 520,170 600,145
+               C680,120 740,168 820,140 C880,120 940,150 1020,130 V0 H-20 Z" fill="#DCCFA9" opacity=".65"/>
+      <path d="M-20,260 C80,205 160,240 240,210 C320,182 380,225 470,205 C560,185 620,225 710,200
+               C790,178 850,215 1020,190 V0 H-20 Z" fill="#CBBB8C" opacity=".5"/>
+
+      <!-- 中景山：墨色轮廓 + 皴纹 -->
+      <g fill="#B8A472" opacity=".55">
+        <path d="M-20,330 C50,270 100,300 150,270 C210,235 260,280 330,255 C380,238 420,270 470,255
+                 C500,246 520,258 540,250 L540,400 L-20,400 Z"/>
+        <path d="M560,340 C630,280 690,310 740,280 C800,244 850,290 920,262 C960,246 990,262 1020,254
+                 L1020,410 L560,410 Z"/>
+      </g>
+      <g stroke="#8B7A52" stroke-width="1.4" opacity=".4" fill="none">
+        <path d="M40,320 q40,-45 80,-25"/><path d="M160,290 q35,-40 75,-20"/>
+        <path d="M620,320 q40,-42 78,-24"/><path d="M760,280 q38,-40 78,-22"/>
+      </g>
+
+      <!-- 瓯江主流：留白水路 + 淡墨水纹 -->
+      <path d="M-30,120 C150,150 140,230 260,270 C400,315 380,380 500,415 C610,447 600,500 730,530
+               C820,552 880,540 1030,565"
+            fill="none" stroke="#F1EBDC" stroke-width="58" stroke-linecap="round"/>
+      <path d="M-30,120 C150,150 140,230 260,270 C400,315 380,380 500,415 C610,447 600,500 730,530
+               C820,552 880,540 1030,565"
+            fill="none" stroke="#9FB3A3" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+      <g stroke="#9FB3A3" stroke-width="1.2" fill="none" opacity=".4">
+        <path d="M60,135 q60,10 110,45"/><path d="M300,300 q60,8 100,40"/>
+        <path d="M560,440 q60,10 100,42"/><path d="M820,545 q50,6 90,20"/>
+      </g>
+
+      <!-- 江上一舟 -->
+      <g transform="translate(430,392) rotate(18)" opacity=".65">
+        <path d="M-16,0 Q0,10 16,0 L11,4 Q0,8 -11,4 Z" fill="#5B5346"/>
+        <line x1="0" y1="0" x2="0" y2="-14" stroke="#5B5346" stroke-width="1.2"/>
+      </g>
+
+      <!-- 近景坡岸与松树点景 -->
+      <path d="M-30,470 C60,430 120,455 190,430 C250,410 300,435 360,420 L360,460 L-30,460 Z" fill="#A8895E" opacity=".55"/>
+      <path d="M720,500 C800,455 860,480 930,455 C970,440 1000,455 1030,448 L1030,500 L720,500 Z" fill="#A8895E" opacity=".55"/>
+      <g fill="#6E7A5E" opacity=".7">
+        <path d="M120,432 L128,410 L136,432 Z"/><path d="M132,438 L140,412 L148,438 Z"/>
+        <path d="M850,462 L858,438 L866,462 Z"/><path d="M862,468 L870,440 L878,468 Z"/>
+      </g>
+
+      <rect width="1000" height="620" filter="url(#paper)"/>
+    </svg>
+
+    <div class="region-tag tag-ls">丽水 · 瓯江上游诗核</div>
+    <div class="region-tag tag-wz">温州 · 楠溪江诗核</div>
+
+    <div id="markers"></div>
+  </div>
+
+  <div class="legend">
+    <span><i></i>已收录详情（诗词 / 美食 / 特产 / 非遗 / 景点齐备）</span>
+    <span><i class="draft"></i>框架待补充（结构已搭好，欢迎继续填充）</span>
+  </div>
+  <div class="hint">提示：点位坐标、诗词与文旅信息均在下方脚本的 SITE_DATA 中维护，增删点位或修改内容后刷新即可生效。</div>
+</div>
+
+<footer>瓯江诗路文学景观留存与活态传播路径研究 · 互动地图原型 v0.1</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <div class="panel-inner" id="panelInner"></div>
+</aside>
+
+<script>
+/* ============================================================
+   SITE_DATA —— 全站唯一数据源。
+   新增点位：复制一个对象，改 id / 坐标 / 内容即可。
+   x, y 为该点在地图中的百分比坐标（0-100）。
+   status: "detailed" 已收录详情 | "draft" 框架待补充
+============================================================ */
+const SITE_DATA = [
+  {
+    id:"jiangxinyu", name:"江心屿", region:"温州", type:"山水胜景类 · 中国诗之岛",
+    x:74, y:30, status:"detailed",
+    summary:"瓯江入海口的江中孤屿，谢灵运登临留句后声名远播，历代帝王将相、文人墨客留诗楹联千余首，是瓯江诗路最具代表性的诗文化岛屿。",
+    poems:[
+      { title:"登江中孤屿", author:"谢灵运", dynasty:"南朝宋",
+        lines:["江南倦历览，江北旷周旋。","怀新道转迥，寻异景不延。","乱流趋孤屿，孤屿媚中川。","云日相辉映，空水共澄鲜。","表灵物莫赏，蕴真谁为传？","想象昆山姿，缅邈区中缘。","始信安期术，得尽养生年。"],
+        note:"孤屿因此诗得名，「孤屿媚中川，云日相辉映，空水共澄鲜」为历代传诵名句。" },
+      { title:"历代题咏辑句（一）", author:"张扩", dynasty:"宋",
+        lines:["寺影一拳石，潮声四面风。"] },
+      { title:"历代题咏辑句（二）", author:"徐照（永嘉四灵）", dynasty:"宋",
+        lines:["流来天际水，截断世间尘。"] },
+      { title:"历代题咏辑句（三）", author:"文天祥", dynasty:"宋",
+        lines:["罗浮山下雪来未，扬子江心月照谁。"] },
+      { title:"历代题咏辑句（四）", author:"林景熙", dynasty:"宋",
+        lines:["丛林忽涌中流地，双塔曾擎半壁天。"] }
+    ],
+    food:[ {name:"温州鱼丸", desc:"瓯江水系传统小吃，江心屿轮渡码头周边小店常见。"}, {name:"江蟹生", desc:"温州传统凉拌江蟹，本地宴席常见冷盘。"} ],
+    specialty:[ {name:"瓯窑瓷器", desc:"温州本土青瓷工艺，常作为文创衍生品开发方向。"} ],
+    heritage:[ {name:"瓯剧", desc:"温州本地戏曲剧种，江心屿周边庙会、节庆常有演出。"} ],
+    sights:[ {name:"江心寺（龙翔禅院）", desc:"清乾隆年间重建，寺内存宋高宗所书「清辉」碑。"}, {name:"东西双塔", desc:"世界航标遗产，曾用作古代航标灯塔逾800年。"}, {name:"浩然楼", desc:"纪念孟浩然留诗江心屿而建。"} ]
+  },
+  {
+    id:"fenglin", name:"枫林镇", region:"温州", type:"宗族古村类 · 千年古镇",
+    x:64, y:44, status:"draft",
+    summary:"楠溪江畔千年古镇，圣旨门楼、书院遗存与碑刻楹联层叠共存，另设二十四节气馆、数字诗路e站等现代展陈。",
+    poems:[], food:[], specialty:[], heritage:[], sights:[ {name:"圣旨门楼", desc:"古镇标志性历史建筑。"} ]
+  },
+  {
+    id:"heyang", name:"鹤阳村", region:"温州", type:"宗族古村类 · 谢灵运后裔",
+    x:57, y:52, status:"draft",
+    summary:"谢灵运后裔聚居古村，祠堂、神牌、古庙楹联留存宗族诗学传承，对内认同强、对外传播相对薄弱。",
+    poems:[], food:[], specialty:[], heritage:[], sights:[]
+  },
+  {
+    id:"pengxi", name:"蓬溪村", region:"温州", type:"宗族古村类 · 谢灵运后裔",
+    x:52, y:57, status:"draft",
+    summary:"与鹤阳村同为谢灵运后裔古村，祠堂楹联、家族诗学文化在地留存明显。",
+    poems:[], food:[], specialty:[], heritage:[], sights:[]
+  },
+  {
+    id:"guyanhuaxiang", name:"古堰画乡 · 通济堰", region:"丽水", type:"山水胜景类 · 水利诗文复合景观",
+    x:30, y:37, status:"draft",
+    summary:"通济堰历代修堰碑刻、古樟群与范成大、汤显祖等历代题咏实景对应，是水利工程与诗文结合的复合型文学景观。",
+    poems:[], food:[ {name:"处州白莲", desc:"丽水传统特产，可结合古堰画乡文旅体验推广。"} ],
+    specialty:[], heritage:[], sights:[ {name:"通济堰", desc:"始建于南朝的古代水利工程，与古樟群共同构成核心景观。"} ]
+  },
+  {
+    id:"xiandu", name:"仙都 · 河阳古民居", region:"丽水", type:"山水胜景类＋宗族古村类",
+    x:22, y:26, status:"draft",
+    summary:"仙都摩崖题刻可与谢灵运、白居易等诗文实景对照；河阳古民居承载义阳诗派与耕读宗族文化。",
+    poems:[], food:[], specialty:[], heritage:[], sights:[ {name:"仙都摩崖题刻", desc:"好溪沿岸历代摩崖石刻群。"} ]
+  },
+  {
+    id:"xiazhang", name:"下樟 · 岩后村", region:"丽水", type:"名人故里类 · 叶绍翁故里",
+    x:16, y:48, status:"draft",
+    summary:"南宋诗人叶绍翁故里，绍翁书院、洗笔池等名人遗迹留存，是名人IP研学与文旅转化的代表点位。",
+    poems:[ { title:"游园不值", author:"叶绍翁", dynasty:"宋",
+      lines:["应怜屐齿印苍苔，小扣柴扉久不开。","春色满园关不住，一枝红杏出墙来。"] } ],
+    food:[], specialty:[], heritage:[], sights:[ {name:"绍翁书院", desc:"纪念叶绍翁的书院遗迹。"}, {name:"洗笔池", desc:"相传为叶绍翁洗笔之处。"} ]
+  }
+];
+
+const TABS = [
+  {key:"poems", label:"诗词", icon:"诗"},
+  {key:"food", label:"美食", icon:"食"},
+  {key:"specialty", label:"特产", icon:"产"},
+  {key:"heritage", label:"非遗", icon:"艺"},
+  {key:"sights", label:"景点", icon:"景"}
+];
+
+const markersEl = document.getElementById("markers");
+SITE_DATA.forEach(spot=>{
+  const btn = document.createElement("button");
+  btn.className = "marker" + (spot.status==="draft" ? " draft":"");
+  btn.style.left = spot.x + "%";
+  btn.style.top = spot.y + "%";
+  btn.setAttribute("aria-label", spot.name);
+  btn.innerHTML = '<span class="dot"></span><span class="label">'+spot.name+'</span>';
+  btn.addEventListener("click", ()=>openPanel(spot.id));
+  markersEl.appendChild(btn);
+});
+
+const overlay = document.getElementById("overlay");
+const panel = document.getElementById("panel");
+const panelInner = document.getElementById("panelInner");
+
+function renderTabContent(spot, key){
+  if(key==="poems"){
+    if(!spot.poems.length) return emptyState("诗词");
+    return spot.poems.map(p=>(
+      '<div class="poem"><div class="ptitle">《'+p.title+'》</div>'+
+      '<div class="pauthor">'+p.dynasty+' · '+p.author+'</div>'+
+      '<div class="ptext">'+p.lines.map(l=>'<p>'+l+'</p>').join("")+'</div>'+
+      (p.note?'<div class="pnote">'+p.note+'</div>':'')+
+      '<div class="photo-slot"><span class="cam">📷</span><span>古今实景照片对照位（待补充：'+p.title+'）</span></div>'+
+      '</div>'
+    )).join("");
+  }
+  const map = {food:"美食",specialty:"特产",heritage:"非遗",sights:"景点"};
+  const list = spot[key];
+  if(!list.length) return emptyState(map[key]);
+  return '<ul class="itemlist">'+list.map(i=>(
+    '<li><div class="iname">'+i.name+'</div><div class="idesc">'+i.desc+'</div></li>'
+  )).join("")+'</ul>';
+}
+function emptyState(label){
+  return '<div class="empty">该点位的<span class="fill">'+label+'</span>信息尚待补充 —— 结构已就绪，可直接在 SITE_DATA 中为该点位追加内容。</div>';
+}
+
+function openPanel(id){
+  const spot = SITE_DATA.find(s=>s.id===id);
+  if(!spot) return;
+  let activeTab = "poems";
+
+  function draw(){
+    panelInner.innerHTML =
+      '<div class="panel-top">'+
+        '<div><div class="panel-tag">'+spot.region+' · '+spot.type+'</div><h2>'+spot.name+'</h2></div>'+
+        '<button class="panel-close" id="closeBtn" aria-label="关闭">✕</button>'+
+      '</div>'+
+      '<div class="summary">'+spot.summary+'</div>'+
+      '<div class="tabs" id="tabs">'+
+        TABS.map(t=>'<button class="tab'+(t.key===activeTab?' active':'')+'" data-tab="'+t.key+'">'+t.label+'</button>').join("")+
+      '</div>'+
+      '<div id="tabpanels"></div>';
+
+    document.getElementById("closeBtn").addEventListener("click", closePanel);
+    document.getElementById("tabs").querySelectorAll(".tab").forEach(tb=>{
+      tb.addEventListener("click", ()=>{ activeTab = tb.dataset.tab; draw(); });
+    });
+    document.getElementById("tabpanels").innerHTML = renderTabContent(spot, activeTab);
+  }
+  draw();
+
+  overlay.classList.add("open");
+  panel.classList.add("open");
+  panel.setAttribute("aria-hidden","false");
+}
+function closePanel(){
+  overlay.classList.remove("open");
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden","true");
+}
+overlay.addEventListener("click", closePanel);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closePanel(); });
+</script>
+</body>
+</html>
