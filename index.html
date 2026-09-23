@@ -7,11 +7,15 @@
 <meta name="description" content="瓯江诗路——温州楠溪江与丽水瓯江上游文学景观互动地图，收录诗词与文旅信息。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#F1EBDC; --paper-2:#E8E0CB; --ink:#2B2622; --ink-soft:#5B5346;
   --seal:#A6362A; --jade:#3F5C4E; --gold:#B08A4E; --line:#CDBFA0;
+  --brush:"Ma Shan Zheng","Noto Serif SC",serif;
+  --r-lg:22px; --r-md:16px; --r-sm:11px; --r-pill:999px;
+  --shadow-soft:0 10px 28px rgba(60,48,30,.10);
+  --shadow-panel:-14px 0 34px rgba(43,38,34,.14);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -30,29 +34,37 @@ body{
 }
 
 header{
-  padding:2.2rem 5vw 1.2rem;
+  padding:2.4rem 5vw 1.4rem;
   border-bottom:1px solid var(--line);
+  position:relative;
+}
+header::after{
+  content:""; position:absolute; left:5vw; right:5vw; bottom:-1px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold) 20%, var(--line) 50%, var(--gold) 80%, transparent);
+  opacity:.6;
 }
 header .brand{
-  font-family:"Noto Serif SC",serif; font-size:1.1rem; font-weight:700; color:var(--seal);
-  letter-spacing:.5em; margin-bottom:.5rem;
+  font-family:var(--brush); font-size:1.7rem; font-weight:400; color:var(--seal);
+  letter-spacing:.35em; margin-bottom:.3rem;
 }
 header h1{
   margin:0; font-size:clamp(1.3rem,3.4vw,1.9rem); font-weight:600; letter-spacing:.08em; color:var(--ink-soft);
 }
-header p{ margin:.6rem 0 0; color:var(--ink-soft); font-size:.95rem; max-width:62ch; line-height:1.7;}
+header p{ margin:.6rem 0 0; color:var(--ink-soft); font-size:.95rem; max-width:62ch; line-height:1.8;}
 
 .stage{ position:relative; padding:1.4rem 5vw 3rem; }
 .map-wrap{
   position:relative; width:100%; aspect-ratio:16/10; max-height:78vh;
   border:1px solid var(--line); background:linear-gradient(180deg,#F5F0E4,#EAE2CB);
-  overflow:hidden;
+  overflow:hidden; border-radius:var(--r-lg); box-shadow:var(--shadow-soft);
 }
 .map-wrap svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
 
 .region-tag{
   position:absolute; font-family:"Noto Sans SC",sans-serif; font-size:.72rem;
   color:var(--ink-soft); letter-spacing:.25em; writing-mode:vertical-rl;
+  background:rgba(241,235,220,.55); padding:.5rem .25rem; border-radius:var(--r-pill);
+  backdrop-filter:blur(1px);
 }
 .tag-wz{ top:8%; right:6%; } .tag-ls{ bottom:8%; left:6%; }
 
@@ -62,23 +74,27 @@ header p{ margin:.6rem 0 0; color:var(--ink-soft); font-size:.95rem; max-width:6
   background:none; border:none; padding:0; font-family:"Noto Serif SC",serif;
 }
 .marker .dot{
-  width:15px; height:15px; background:var(--seal); border-radius:2px;
-  transform:rotate(45deg); box-shadow:0 0 0 3px rgba(166,54,42,.15);
-  transition:transform .15s ease, box-shadow .15s ease;
+  width:16px; height:16px; background:radial-gradient(circle at 35% 30%, #C4544A, var(--seal) 70%);
+  border-radius:50%; box-shadow:0 0 0 4px rgba(166,54,42,.14), 0 2px 6px rgba(43,38,34,.25);
+  transition:transform .18s ease, box-shadow .18s ease;
 }
-.marker.draft .dot{ background:var(--jade); box-shadow:0 0 0 3px rgba(63,92,78,.15); }
-.marker:hover .dot, .marker:focus-visible .dot{ transform:rotate(45deg) scale(1.25); }
+.marker.draft .dot{
+  background:radial-gradient(circle at 35% 30%, #587566, var(--jade) 70%);
+  box-shadow:0 0 0 4px rgba(63,92,78,.14), 0 2px 6px rgba(43,38,34,.25);
+}
+.marker:hover .dot, .marker:focus-visible .dot{ transform:scale(1.3); }
 .marker .label{
-  font-size:.86rem; color:var(--ink); background:rgba(241,235,220,.88);
-  padding:.1rem .5rem; white-space:nowrap; border:1px solid var(--line);
+  font-size:.86rem; color:var(--ink); background:rgba(241,235,220,.9);
+  padding:.15rem .65rem; white-space:nowrap; border:1px solid var(--line);
+  border-radius:var(--r-pill); box-shadow:0 2px 6px rgba(43,38,34,.06);
 }
 
 .legend{
-  display:flex; gap:1.6rem; margin-top:1rem; font-family:"Noto Sans SC",sans-serif;
+  display:flex; gap:1.6rem; margin-top:1.1rem; font-family:"Noto Sans SC",sans-serif;
   font-size:.8rem; color:var(--ink-soft); flex-wrap:wrap;
 }
 .legend span{ display:inline-flex; align-items:center; gap:.4rem; }
-.legend i{ width:10px; height:10px; background:var(--seal); transform:rotate(45deg); display:inline-block; }
+.legend i{ width:11px; height:11px; background:var(--seal); border-radius:50%; display:inline-block; }
 .legend i.draft{ background:var(--jade); }
 
 .hint{ margin-top:.5rem; font-size:.82rem; color:var(--ink-soft); font-family:"Noto Sans SC",sans-serif;}
@@ -93,56 +109,82 @@ header p{ margin:.6rem 0 0; color:var(--ink-soft); font-size:.95rem; max-width:6
 .panel{
   position:fixed; top:0; right:0; height:100%; width:min(480px,92vw);
   background:var(--paper); border-left:1px solid var(--line);
-  transform:translateX(100%); transition:transform .3s ease;
+  transform:translateX(100%); transition:transform .35s cubic-bezier(.22,.68,.32,1);
   z-index:21; overflow-y:auto; padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+  border-radius:var(--r-lg) 0 0 var(--r-lg); box-shadow:var(--shadow-panel);
 }
 .panel.open{ transform:translateX(0); }
-.panel-inner{ padding:1.6rem 1.6rem 3rem; }
+.panel-inner{ padding:1.8rem 1.7rem 3rem; }
 .panel-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
 .panel-close{
-  background:none; border:1px solid var(--line); color:var(--ink); width:32px; height:32px;
-  font-size:1rem; cursor:pointer; flex:none; font-family:"Noto Sans SC",sans-serif;
+  background:var(--paper-2); border:1px solid var(--line); color:var(--ink); width:34px; height:34px;
+  border-radius:50%; font-size:1rem; cursor:pointer; flex:none; font-family:"Noto Sans SC",sans-serif;
+  transition:transform .15s ease, background .15s ease;
 }
+.panel-close:hover{ transform:rotate(90deg); background:var(--paper); }
 .panel-tag{ font-family:"Noto Sans SC",sans-serif; font-size:.72rem; color:var(--seal); letter-spacing:.1em;}
-.panel h2{ margin:.3rem 0 .2rem; font-size:1.5rem; }
-.panel .region{ font-size:.85rem; color:var(--ink-soft); margin-bottom:.9rem; }
-.panel .summary{ font-size:.9rem; line-height:1.85; color:var(--ink-soft); margin-bottom:1.3rem; }
+.panel h2{ margin:.35rem 0 .25rem; font-size:1.55rem; font-family:var(--brush); font-weight:400; letter-spacing:.06em; }
+.panel .region{ font-size:.85rem; color:var(--ink-soft); margin-bottom:1rem; }
+.panel .summary{
+  font-size:.9rem; line-height:1.9; color:var(--ink-soft); margin-bottom:1.4rem;
+  background:var(--paper-2); border-radius:var(--r-md); padding:.9rem 1.05rem;
+}
 
-.tabs{ display:flex; gap:0; border-bottom:1px solid var(--line); margin-bottom:1.1rem; flex-wrap:wrap; }
+.tabs{ display:flex; gap:.3rem; border-bottom:1px solid var(--line); padding-bottom:.8rem; margin-bottom:1.2rem; flex-wrap:wrap; }
 .tab{
-  font-family:"Noto Sans SC",sans-serif; font-size:.86rem; padding:.55rem .9rem;
-  background:none; border:none; cursor:pointer; color:var(--ink-soft); position:relative;
+  font-family:"Noto Sans SC",sans-serif; font-size:.82rem; padding:.48rem .78rem;
+  background:none; border:1px solid transparent; border-radius:var(--r-pill);
+  cursor:pointer; color:var(--ink-soft); position:relative; transition:background .15s ease, color .15s ease, border-color .15s ease;
 }
-.tab.active{ color:var(--ink); font-weight:500; }
-.tab.active::after{
-  content:""; position:absolute; left:.9rem; right:.9rem; bottom:-1px; height:2px; background:var(--seal);
-}
+.tab:hover{ background:rgba(166,54,42,.06); }
+.tab.active{ color:var(--seal); font-weight:600; background:rgba(166,54,42,.09); border-color:rgba(166,54,42,.25); }
 .tabpanel{ display:none; }
 .tabpanel.active{ display:block; }
 
-.poem{ margin-bottom:1.4rem; padding-bottom:1.2rem; border-bottom:1px dashed var(--line); }
-.poem:last-child{ border-bottom:none; }
-.poem .ptitle{ font-weight:700; font-size:1.02rem; }
-.poem .pauthor{ font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--ink-soft); margin:.15rem 0 .6rem; }
-.poem .ptext p{ margin:0 0 .25rem; line-height:1.9; font-size:.98rem; }
-.poem .pnote{ font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--gold); margin-top:.5rem; }
+.poem{
+  margin-bottom:1.2rem; padding:1.05rem 1.15rem 1.15rem; border-radius:var(--r-md);
+  background:linear-gradient(180deg, rgba(232,224,203,.55), rgba(232,224,203,.28));
+  border:1px solid rgba(205,191,160,.55);
+}
+.poem:last-child{ margin-bottom:0; }
+.poem .ptitle{ font-weight:700; font-size:1.04rem; font-family:var(--brush); letter-spacing:.03em; }
+.poem .pauthor{ font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--ink-soft); margin:.2rem 0 .65rem; }
+.poem .ptext p{ margin:0 0 .3rem; line-height:1.95; font-size:.98rem; }
+.poem .pnote{
+  font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--gold); margin-top:.6rem;
+  padding-top:.55rem; border-top:1px dashed rgba(176,138,78,.35); line-height:1.7;
+}
 .photo-slot{
-  margin-top:.8rem; border:1px dashed var(--line); background:var(--paper-2);
+  margin-top:.9rem; border:1px dashed var(--line); background:rgba(241,235,220,.6);
   min-height:96px; display:flex; align-items:center; justify-content:center;
   font-family:"Noto Sans SC",sans-serif; font-size:.76rem; color:var(--ink-soft); text-align:center; gap:.4rem; flex-direction:column;
+  border-radius:var(--r-sm); overflow:hidden;
 }
 .photo-slot .cam{ font-size:1.1rem; opacity:.55; }
+.photo-slot.has-photo{ display:block; padding:.6rem; }
+.photo-slot.has-photo img{ width:100%; border-radius:calc(var(--r-sm) - 3px); display:block; }
+.photo-slot .pcap{ margin-top:.5rem; line-height:1.6; }
 
-.itemlist{ list-style:none; margin:0; padding:0; }
-.itemlist li{ padding:.7rem 0; border-bottom:1px solid var(--paper-2); }
-.itemlist li:last-child{ border-bottom:none; }
+.itemlist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.7rem; }
+.itemlist li{
+  padding:.85rem .95rem; border-radius:var(--r-md); background:var(--paper-2);
+  border:1px solid rgba(205,191,160,.4);
+}
+.itemlist li.has-img{ display:flex; gap:.8rem; align-items:flex-start; }
+.itemlist li.has-img img{
+  width:84px; height:84px; object-fit:cover; border-radius:var(--r-sm); flex:none;
+  box-shadow:0 3px 8px rgba(43,38,34,.15);
+}
 .itemlist .iname{ font-weight:600; font-size:.96rem; }
-.itemlist .idesc{ font-family:"Noto Sans SC",sans-serif; font-size:.83rem; color:var(--ink-soft); margin-top:.2rem; line-height:1.6; }
+.itemlist .idesc{ font-family:"Noto Sans SC",sans-serif; font-size:.83rem; color:var(--ink-soft); margin-top:.25rem; line-height:1.65; }
 
-.empty{ font-family:"Noto Sans SC",sans-serif; font-size:.85rem; color:var(--ink-soft); padding:1rem 0; }
+.empty{
+  font-family:"Noto Sans SC",sans-serif; font-size:.85rem; color:var(--ink-soft); padding:1.1rem 1.15rem;
+  background:var(--paper-2); border-radius:var(--r-md); border:1px dashed var(--line);
+}
 .empty .fill{ color:var(--jade); }
 
-footer{ padding:1.5rem 5vw 2.5rem; font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--ink-soft); border-top:1px solid var(--line); }
+footer{ padding:1.5rem 5vw 2.5rem; font-family:"Noto Sans SC",sans-serif; font-size:.78rem; color:var(--ink-soft); border-top:1px solid var(--line); text-align:center; letter-spacing:.03em; }
 </style>
 </head>
 <body>
@@ -177,7 +219,7 @@ footer{ padding:1.5rem 5vw 2.5rem; font-family:"Noto Sans SC",sans-serif; font-s
         <path d="M560,340 C630,280 690,310 740,280 C800,244 850,290 920,262 C960,246 990,262 1020,254
                  L1020,410 L560,410 Z"/>
       </g>
-      <g stroke="#8B7A52" stroke-width="1.4" opacity=".4" fill="none">
+      <g stroke="#8B7A52" stroke-width="1.4" opacity=".4" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <path d="M40,320 q40,-45 80,-25"/><path d="M160,290 q35,-40 75,-20"/>
         <path d="M620,320 q40,-42 78,-24"/><path d="M760,280 q38,-40 78,-22"/>
       </g>
@@ -188,24 +230,26 @@ footer{ padding:1.5rem 5vw 2.5rem; font-family:"Noto Sans SC",sans-serif; font-s
             fill="none" stroke="#F1EBDC" stroke-width="58" stroke-linecap="round"/>
       <path d="M-30,120 C150,150 140,230 260,270 C400,315 380,380 500,415 C610,447 600,500 730,530
                C820,552 880,540 1030,565"
-            fill="none" stroke="#9FB3A3" stroke-width="2" stroke-linecap="round" opacity=".55"/>
-      <g stroke="#9FB3A3" stroke-width="1.2" fill="none" opacity=".4">
+            fill="none" stroke="#9FB3A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+      <g stroke="#9FB3A3" stroke-width="1.2" fill="none" opacity=".4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M60,135 q60,10 110,45"/><path d="M300,300 q60,8 100,40"/>
         <path d="M560,440 q60,10 100,42"/><path d="M820,545 q50,6 90,20"/>
       </g>
 
       <!-- 江上一舟 -->
       <g transform="translate(430,392) rotate(18)" opacity=".65">
-        <path d="M-16,0 Q0,10 16,0 L11,4 Q0,8 -11,4 Z" fill="#5B5346"/>
-        <line x1="0" y1="0" x2="0" y2="-14" stroke="#5B5346" stroke-width="1.2"/>
+        <path d="M-16,0 Q0,11 16,0 Q10,5 0,7 Q-10,5 -16,0 Z" fill="#5B5346"/>
+        <line x1="0" y1="0" x2="0" y2="-14" stroke="#5B5346" stroke-width="1.2" stroke-linecap="round"/>
       </g>
 
       <!-- 近景坡岸与松树点景 -->
       <path d="M-30,470 C60,430 120,455 190,430 C250,410 300,435 360,420 L360,460 L-30,460 Z" fill="#A8895E" opacity=".55"/>
       <path d="M720,500 C800,455 860,480 930,455 C970,440 1000,455 1030,448 L1030,500 L720,500 Z" fill="#A8895E" opacity=".55"/>
       <g fill="#6E7A5E" opacity=".7">
-        <path d="M120,432 L128,410 L136,432 Z"/><path d="M132,438 L140,412 L148,438 Z"/>
-        <path d="M850,462 L858,438 L866,462 Z"/><path d="M862,468 L870,440 L878,468 Z"/>
+        <path d="M120,432 Q114,414 128,408 Q142,414 136,432 Q128,438 120,432 Z"/>
+        <path d="M132,438 Q126,418 140,410 Q154,418 148,438 Q140,444 132,438 Z"/>
+        <path d="M850,462 Q844,442 858,436 Q872,442 866,462 Q858,468 850,462 Z"/>
+        <path d="M862,468 Q856,446 870,438 Q884,446 878,468 Q870,474 862,468 Z"/>
       </g>
 
       <rect width="1000" height="620" filter="url(#paper)"/>
@@ -242,24 +286,63 @@ const SITE_DATA = [
   {
     id:"jiangxinyu", name:"江心屿", region:"温州", type:"山水胜景类 · 中国诗之岛",
     x:74, y:30, status:"detailed",
-    summary:"瓯江入海口的江中孤屿，谢灵运登临留句后声名远播，历代帝王将相、文人墨客留诗楹联千余首，是瓯江诗路最具代表性的诗文化岛屿。",
+    summary:"瓯江入海口的江中孤屿，谢灵运登临留句后声名远播，历代帝王将相、文人墨客登临题咏千余首，是瓯江诗路最具代表性的诗文化岛屿；屿上双塔、古寺、亭阁与诗文一一对应，堪称一部立于江心的文学史。",
     poems:[
       { title:"登江中孤屿", author:"谢灵运", dynasty:"南朝宋",
-        lines:["江南倦历览，江北旷周旋。","怀新道转迥，寻异景不延。","乱流趋孤屿，孤屿媚中川。","云日相辉映，空水共澄鲜。","表灵物莫赏，蕴真谁为传？","想象昆山姿，缅邈区中缘。","始信安期术，得尽养生年。"],
-        note:"孤屿因此诗得名，「孤屿媚中川，云日相辉映，空水共澄鲜」为历代传诵名句。" },
-      { title:"历代题咏辑句（一）", author:"张扩", dynasty:"宋",
-        lines:["寺影一拳石，潮声四面风。"] },
-      { title:"历代题咏辑句（二）", author:"徐照（永嘉四灵）", dynasty:"宋",
-        lines:["流来天际水，截断世间尘。"] },
-      { title:"历代题咏辑句（三）", author:"文天祥", dynasty:"宋",
-        lines:["罗浮山下雪来未，扬子江心月照谁。"] },
-      { title:"历代题咏辑句（四）", author:"林景熙", dynasty:"宋",
-        lines:["丛林忽涌中流地，双塔曾擎半壁天。"] }
+        lines:["江南倦历览，江北旷周旋。","怀新道转迥，寻异景不延。","乱流趋正绝，孤屿媚中川。","云日相辉映，空水共澄鲜。","表灵物莫赏，蕴真谁为传？","想象昆山姿，缅邈区中缘。","始信安期术，得尽养生年。"],
+        note:"「云日相辉映，空水共澄鲜」是孤屿最早也最著名的题咏，江心屿澄鲜阁之名即取自此句。",
+        photo:"images/chengxiange.jpg", photoCaption:"今日澄鲜阁——阁名即取自「云日相辉映，空水共澄鲜」" },
+      { title:"永嘉上浦馆逢张子容", author:"孟浩然", dynasty:"唐",
+        lines:["逆旅相逢处，江村日暮时。","众山遥对酒，孤屿共题诗。","廨宇邻蛟室，人烟接岛夷。","乡园万余里，失路一相悲。"],
+        note:"上浦馆旧临瓯江，「孤屿共题诗」一句，与谢灵运遥相唱和。" },
+      { title:"送裴虬作尉永嘉", author:"杜甫", dynasty:"唐",
+        lines:["孤屿亭何在？天涯水气中。","隐吏逢梅福，看山忆谢公。"],
+        note:"短短二十字将孤屿与谢灵运并提，可见盛唐时孤屿已因谢诗名满天下。" },
+      { title:"江心寺联", author:"王十朋", dynasty:"宋",
+        lines:["云朝朝朝朝朝朝朝朝散，潮长长长长长长长长消。"],
+        note:"此联悬于江心寺山门，八个「朝」字、八个「长」字读音各异，相传为温州籍状元王十朋所撰，是江心屿最负盛名的叠字楹联。" },
+      { title:"北归宿中川寺", author:"文天祥", dynasty:"宋",
+        lines:["万里风霜鬓已丝，飘零回首壮心悲。","罗浮山下雪来未，扬子江心月照谁。","只谓虎头非贵相，不图羝乳有归期。","乘潮一到中川寺，暗读中兴第二碑。"],
+        note:"文天祥兵败被俘、北归途中曾夜宿江心寺，「中兴第二碑」即指寺中所刻宋高宗手书。屿上至今存文天祥祠（信国公祠），浩然楼旧址即在祠前。" },
+      { title:"江心寺", author:"林景熙", dynasty:"宋",
+        lines:["佛借龙宫五百年，平分城树与村烟。","丛林忽涌中流地，双塔曾擎半壁天。","石色带云笼客袖，磬声和月落渔船。","袈袍不限侵门水，十载何人坐象筵？"],
+        note:"首句暗合江心寺「借地建寺，约定五百年」的传说——相传清了禅师填平两岛建寺时，曾向江中龙王借地为期。" },
+      { title:"孤屿双塔", author:"李孝光", dynasty:"元",
+        lines:["巨鳌擎出梵王宫，塔影东西截断虹。","夜半潮声来枕上，犹疑双铎撼天风。"],
+        note:"「双铎」指塔上悬挂的铜风铃，东西两塔至今仍是江心屿最醒目的地标，1997年被列为世界百座历史文物灯塔之一。" },
+      { title:"江心屿（摘句）", author:"王叔果", dynasty:"明",
+        lines:["孤屿不与众山俦，屹立江心几百秋。"] },
+      { title:"舟中望孤屿作", author:"江湜", dynasty:"清",
+        lines:["又看孤屿在中流，双塔凌波势欲浮。","天与瓯江自千古，我思谢客不同游。","潮平别浦帆初落，野阔孤飞鸟亦愁。","蓦地乡心来一片，明朝题上孟公楼。"],
+        note:"「孟公楼」即浩然楼，清代曾一度被误称作「孟楼」。诗人乘船夜过孤屿、见双塔浮波，遂生思乡怀古之情。" }
     ],
-    food:[ {name:"温州鱼丸", desc:"瓯江水系传统小吃，江心屿轮渡码头周边小店常见。"}, {name:"江蟹生", desc:"温州传统凉拌江蟹，本地宴席常见冷盘。"} ],
-    specialty:[ {name:"瓯窑瓷器", desc:"温州本土青瓷工艺，常作为文创衍生品开发方向。"} ],
-    heritage:[ {name:"瓯剧", desc:"温州本地戏曲剧种，江心屿周边庙会、节庆常有演出。"} ],
-    sights:[ {name:"江心寺（龙翔禅院）", desc:"清乾隆年间重建，寺内存宋高宗所书「清辉」碑。"}, {name:"东西双塔", desc:"世界航标遗产，曾用作古代航标灯塔逾800年。"}, {name:"浩然楼", desc:"纪念孟浩然留诗江心屿而建。"} ]
+    food:[
+      { name:"灯盏糕", desc:"温州十大名小吃之一，因形似旧时油灯盏得名。大米黄豆磨浆作皮，包裹萝卜丝、猪肉与鸡蛋，鲜猪油炸至金黄，外皮酥脆、内馅鲜香，趁热吃最妙。", img:"images/dengzhangao.jpg" },
+      { name:"温州鱼丸", desc:"与各地鱼丸不同，呈不规则长条状，玉白半透明。以鮸鱼肉手工揉捏而成，Q弹有嚼劲，汤色澄清，佐以米醋、胡椒粉，微酸微辣、鲜味十足。", img:"images/wenzhou-yuwan.jpg" },
+      { name:"松糕", desc:"温州传统名点，以粳米或糯米蒸制，松软香甜，常夹肥肉丁、桂花与红糖。旧时是订婚结婚必备的伴手礼，寓意「步步高升」。", img:"images/songgao.jpg" },
+      { name:"葱油黄鱼", desc:"瓯菜代表作，温州人宴席讲究「无黄鱼不成宴」。新鲜大黄鱼清蒸后铺葱花姜丝、浇热油激香，鱼肉鲜嫩，调味清淡，突出黄鱼本味。" },
+      { name:"凤尾鱼", desc:"瓯江著名特产，尾部分叉形如凤尾，端午前后洄游至江心屿一带产卵，最为肥美，腹内多子，油煎后香脆可口，是佐酒下饭的佳品。" }
+    ],
+    specialty:[
+      { name:"蓝夹缬制品", desc:"以蓝夹缬技艺印染而成的方巾、布艺，图案古朴、蓝白相映，是温州最具辨识度的手作伴手礼之一。" },
+      { name:"瓯绣、瓯塑工艺摆件", desc:"取材于瓯绣、瓯塑两项非遗技艺制成的绣品与彩色浮雕摆件，针法细腻、色泽沉厚，宜作馈赠之选。" }
+    ],
+    heritage:[
+      { name:"蓝夹缬技艺", desc:"传统印染「四缬」技艺之一，被称为「雕版印染的活化石」，2011年列入国家级非物质文化遗产名录。以蓝靛为染液，用两块对称阴刻木板夹紧织物防染印花，起于秦汉、盛于唐宋，如今仅在浙南温州一带留存。" },
+      { name:"瓯塑", desc:"由传统漆艺中的堆漆工艺发展而来，因发源于瓯江流域得名，俗称「彩色浮雕」，2008年列入国家级非物质文化遗产名录，与黄杨木雕、东阳木雕、青田石雕并称「浙江三雕一塑」。" },
+      { name:"瓯绣", desc:"中国六大名绣之一，因产于瓯江流域得名，由唐代锦衣发展而来，2008年列入国家级非物质文化遗产名录。明末清初温州对外交通渐兴，瓯绣博采众长，技艺日趋成熟、自具一格。" },
+      { name:"提线木偶戏", desc:"以泰顺、平阳两地最具代表性，均列入国家级非物质文化遗产名录。泰顺提线木偶戏南宋年间自杭州传入，逢年过节例演不辍；平阳木偶戏形成不晚于宋代，明清时达于鼎盛。" }
+    ],
+    sights:[
+      { name:"江心双塔（东塔·西塔）", desc:"东塔始建于唐咸通十年（869），现高26米，塔顶古榕盘根、四季常绿；西塔始建于宋开宝二年（969），现高32米，42个檐角悬铜风铃。两塔曾作古代航标逾800年，1997年被国际航标协会评为世界百座历史文物灯塔之一。" },
+      { name:"浩然楼", desc:"明万历八年（1580）始建，取文天祥《正气歌》「于人曰浩然」之意命名。清乾隆年间曾被误认作纪念孟浩然而改称「孟楼」，光绪元年（1875）复名。「江心十景」中的「孟楼潮韵」即得名于此。" },
+      { name:"江心寺", desc:"南宋绍兴七年，清了禅师奉诏填平中川两岛建寺，即今江心寺。山门悬叠字联「云朝朝朝朝朝朝朝朝散，潮长长长长长长长长消」，相传为温州籍状元王十朋所撰；王十朋、木待问都曾寄居寺中苦读，先后高中状元。" },
+      { name:"谢公亭", desc:"为纪念山水诗鼻祖谢灵运而建，相传孤屿西山下古亭为其常临江观景处。历代屡有兴废，今亭为1952年所建、1980年重修，六角攒尖顶，黄色琉璃瓦，朱红圆柱。" },
+      { name:"澄鲜阁", desc:"北宋崇宁元年（1102）始建，原名「水陆堂」；明万历十九年（1591）王叔杲取谢灵运「云日相辉映，空水共澄鲜」诗句易名「澄鲜阁」，为历代文人赏景宴饮之所。今阁为清代晚期建筑，两层三间木构楼阁。", img:"images/chengxiange.jpg" },
+      { name:"宋园", desc:"以「六馆一堂」呈现温州南宋人文肌理与宋韵美学，是承载文化展示与交流互动的园林空间，可从中感受温州南宋历史与风雅日常。" },
+      { name:"谢公阁", desc:"为纪念谢灵运新建的三层仿古楼阁，占地约1900平方米，馆内围绕其生平经历、诗文著作及对温州文化的影响布展；二楼回廊视野开阔，可登楼俯瞰江心双塔。" },
+      { name:"山水戏台", desc:"宋元风格仿古戏台，歇山顶木构，斗拱华美，台基花岗岩砌筑，后台设美人靠。温州素有「戏曲故里·南戏发祥地」之称，此台为屿上演艺活动新添了一方丝竹之地。", img:"images/shanshui-xitai.jpg" }
+    ]
   },
   {
     id:"fenglin", name:"枫林镇", region:"温州", type:"宗族古村类 · 千年古镇",
@@ -334,7 +417,9 @@ function renderTabContent(spot, key){
       '<div class="pauthor">'+p.dynasty+' · '+p.author+'</div>'+
       '<div class="ptext">'+p.lines.map(l=>'<p>'+l+'</p>').join("")+'</div>'+
       (p.note?'<div class="pnote">'+p.note+'</div>':'')+
-      '<div class="photo-slot"><span class="cam">📷</span><span>古今实景照片对照位（待补充：'+p.title+'）</span></div>'+
+      (p.photo
+        ? '<div class="photo-slot has-photo"><img src="'+p.photo+'" alt="'+(p.photoCaption||p.title)+'" loading="lazy"><div class="pcap">'+(p.photoCaption||'今日实景')+'</div></div>'
+        : '<div class="photo-slot"><span class="cam">📷</span><span>古今实景照片对照位（待补充：'+p.title+'）</span></div>')+
       '</div>'
     )).join("");
   }
@@ -342,7 +427,10 @@ function renderTabContent(spot, key){
   const list = spot[key];
   if(!list.length) return emptyState(map[key]);
   return '<ul class="itemlist">'+list.map(i=>(
-    '<li><div class="iname">'+i.name+'</div><div class="idesc">'+i.desc+'</div></li>'
+    '<li class="'+(i.img?'has-img':'')+'">'+
+      (i.img?'<img src="'+i.img+'" alt="'+i.name+'" loading="lazy">':'')+
+      '<div><div class="iname">'+i.name+'</div><div class="idesc">'+i.desc+'</div></div>'+
+    '</li>'
   )).join("")+'</ul>';
 }
 function emptyState(label){
